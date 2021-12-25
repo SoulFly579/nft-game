@@ -4,6 +4,7 @@ import _404 from "@/views/404NotFound.vue";
 import MarketPlace from "@/views/MarketPlace.vue";
 import ContactPage from "@/views/ContactPage.vue";
 import LoginPage from "@/views/auth/LoginPage.vue";
+import NFTS from "@/views/NFTS.vue";
 import store from "../store"
 
 const routes = [
@@ -22,6 +23,11 @@ const routes = [
     {
         path: "/explore",
         component: MarketPlace,
+        meta: { isRequireUser: true }
+    },
+    {
+        path: "/game",
+        component: NFTS,
         meta: { isRequireUser: true }
     },
     {

@@ -91,8 +91,7 @@
                             <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                                 aria-expanded="false" data-bs-offset="-100,10">
                                 <span data-blast="bgColor"><i class="icofont-user"></i></span> <span
-                                    class="d-none d-md-inline">Alex
-                                    Joe</span>
+                                    class="d-none d-md-inline">{{this.$store.getters._getWalletAddress}}</span>
                             </a>
 
                             <ul class="dropdown-menu">

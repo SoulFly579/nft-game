@@ -8,6 +8,10 @@ export default {
         authToken: "",
         isLoggedIn: false,
         error: null,
+        balanceOfUser:null,
+        invalidNetwork:false,
+        contractAdress: `0x1085842ccC3A522570B38796f42C1985c0Bf8b2c`,
+        all_nfts:[]
     },
 
 
@@ -17,14 +21,18 @@ export default {
             var authData = state.authData
             return authData
         },
-        _getAccount: state => state.account,
+        _getWalletAddress: state => state.walletAddress,
+        _getBalanceOfUser: state => state.balanceOfUser,
         _getError: state => state.error,
+        _getInvalidNetwork: state => state.invalidNetwork,
+        _getAllNfts: state=>state.all_nfts,
+        _getContractAdress: state=>state.contractAdress
     },
 
     mutations: {
         setAuth(state, payload) {
-            state.authData = payload.user
-            state.authToken = payload.token
+            state.authData = payload?.user
+            state.authToken = payload?.token
         },
         setAuthStatus(state, status) {
             state.isLoggedIn = status;
@@ -35,6 +43,12 @@ export default {
         setError(state, error) {
             state.error = error;
         },
+        setInvalidNetwork(state,status){
+            state.invalidNetwork = status
+        },
+        setAllNfts(state, payload){
+            state.all_nfts = [...payload,state.all_nfts]
+        }
     },
     actions: {
         async loginUser({ commit }, payload) {
