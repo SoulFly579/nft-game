@@ -10,8 +10,8 @@ export default {
         error: null,
         balanceOfUser:null,
         invalidNetwork:false,
-        contractAdress: `0x1085842ccC3A522570B38796f42C1985c0Bf8b2c`,
-        all_nfts:[]
+        contractAdress: '0x1085842ccC3A522570B38796f42C1985c0Bf8b2c',
+        allNfts:null,
     },
 
 
@@ -25,8 +25,8 @@ export default {
         _getBalanceOfUser: state => state.balanceOfUser,
         _getError: state => state.error,
         _getInvalidNetwork: state => state.invalidNetwork,
-        _getAllNfts: state=>state.all_nfts,
-        _getContractAdress: state=>state.contractAdress
+        _getAllNfts: state=>state.allNfts,
+        _getContractAdress: state=>state.contractAdress,
     },
 
     mutations: {
@@ -46,8 +46,11 @@ export default {
         setInvalidNetwork(state,status){
             state.invalidNetwork = status
         },
-        setAllNfts(state, payload){
-            state.all_nfts = [...payload,state.all_nfts]
+        setBalanceOfUser(state,payload){
+            state.balanceOfUser = payload.balance;
+        },
+        setAllNfts(state,payload){
+            state.allNfts = payload
         }
     },
     actions: {
@@ -104,6 +107,7 @@ export default {
             const accounts = await ethereum.request({
                 method: "eth_requestAccounts",
             });
+            localStorage.setItem("wallet",accounts[0])
             commit("setWalletAddress", accounts[0]);
             commit("setAuthStatus", true);
         },
