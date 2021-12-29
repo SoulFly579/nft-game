@@ -16,6 +16,7 @@ export const init = async ()=> {
 			.request({ method: 'eth_requestAccounts' })
 			.then((accounts) => {
 				store.commit("setWalletAddress",accounts[0])
+				store.commit("setError",null)
 				console.log(`Selected account is ${store.getters._getWalletAddress}`);
 			})
 			.catch((err) => {
@@ -24,8 +25,15 @@ export const init = async ()=> {
 			});
 
 		window.ethereum.on('accountsChanged', function (accounts) {
-			store.commit("setWalletAddress",accounts[0])
-			console.log(`Selected account changed to ${store.getters._getWalletAddress}`);
+			if(accounts[0] !== undefined) {
+				store.commit("setError",null)
+				store.commit("setWalletAddress",accounts[0])
+				console.log(`Selected account changed to ${store.getters._getWalletAddress}`);
+			}else{
+				store.commit("setWalletAddress","");
+				store.commit("setError","Please to be sure, your wallet connected.")
+			}
+		
 		});
 
         window.ethereum.on("networkChanged",()=>{
@@ -55,10 +63,13 @@ export const getUserBalance = async () => {
 
 export const detectNetwork = async() => {
     const networkId = await web3.eth.net.getId();
+	console.log(networkId);
 
     if(networkId !== 3){
+		store.commit("setInvalidNetwork",true);
         throw new Error('Wrong network. Please check your network...');
     }
+	store.commit("setInvalidNetwork",false);
 
     return networkId;
 }
@@ -68,13 +79,6 @@ export const allNfts = async()=>{
     if (!isInitialized) {
 		await init();
 	}
-
-
-	// .then( async(id_array)=>{
-	// 	store.commit("setAllNfts", id_array)
-	// 	return await getAllNftDataFromArray(id_array)
-    // });
-
     var id_array = await contract.methods.getAllTokensOfUser(store.getters._getWalletAddress).call()
 	store.commit("setAllNfts", id_array)
 	return await getAllNftDataFromArray(id_array)
@@ -114,5 +118,18 @@ export const getNftDetail = async(id)=> {
                     console.log(error);
                 });
 			})
+}
+
+export const mine = async(id)=> {
+	if (!isInitialized) {
+		await init();
+	}
+
+	if(store.getters.allNfts === null){
+		await allNfts() 
+	}
+
+	return await contract.methods.mine(id).send({from:store.getters._getWalletAddress}).on("error",(error)=>{console.log(error)})
+
 }
 
