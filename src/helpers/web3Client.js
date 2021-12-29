@@ -1,6 +1,7 @@
 import abi from "./abi.json"
 import Web3 from "web3"
 import store from "@/store"
+import router from "@/router"
 
 let contract;
 
@@ -31,7 +32,9 @@ export const init = async ()=> {
 				console.log(`Selected account changed to ${store.getters._getWalletAddress}`);
 			}else{
 				store.commit("setWalletAddress","");
-				store.commit("setError","Please to be sure, your wallet connected.")
+				// store.commit("setError","Please to be sure, your wallet connected.")
+				store.commit("setAuthStatus",false)
+				router.push({path:"/login"})
 			}
 		
 		});
