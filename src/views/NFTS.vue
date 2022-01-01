@@ -8,7 +8,7 @@
   </div>
   <div v-else-if="loading == true">Loading...</div>
   <div v-else>
-    <h1>Nft Tokens</h1>
+    <h1>Nft Tokens  <button @click="mint" class="btn btn-success">Mint</button></h1>
     <div class="container">
       <div class="row">
         <div
@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { init, allNfts, mine } from "@/helpers/web3Client";
+import { init, allNfts, mine, mint } from "@/helpers/web3Client";
 
 export default {
   name: "NFTS",
@@ -66,6 +66,20 @@ export default {
         this.loading = false;
       }
     },
+
+    async mint(){
+       this.loading = true;
+      var res = await mint().catch((error)=>{ 
+        if(error.code == 4001){
+          this.loading = false;
+        }
+        console.log(error)
+         });
+      if (res) {
+        this.allNftsOfUser = await allNfts();
+        this.loading = false;
+      }
+    }
   },
 };
 </script>

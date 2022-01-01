@@ -1,4 +1,6 @@
+import store from '..';
 import router from '../../router';
+import { localStorageRead,localStorageWrite } from "@/helpers/localStorageFunction"
 
 export default {
     state: {
@@ -67,8 +69,17 @@ export default {
             const { ethereum } = window;
             const accounts = await ethereum.request({ method: "eth_accounts" });
             if (accounts.length !== 0) {
+                if(store.getters._isLoggedIn == false){
+                    if(localStorageRead("wallet")){
+                        var result = store.dispatch("wantPassword",accounts[0])
+                        if(!result){
+                            return false;
+                        }
+                     }else{
+                        store.dispatch("saveUser",accounts[0])
+                     }
+                }
                 commit("setWalletAddress", accounts[0]);
-                commit("setAuthStatus", true);
                 return 1;
             } else {
                 return 0;
@@ -79,9 +90,37 @@ export default {
             const accounts = await ethereum.request({
                 method: "eth_requestAccounts",
             });
-            localStorage.setItem("wallet", accounts[0])
+            if(localStorageRead("wallet")){
+                store.dispatch("wantPassword",accounts[0])
+            }else{
+                store.dispatch("saveUser",accounts[0])
+            }
             commit("setWalletAddress", accounts[0]);
-            commit("setAuthStatus", true);
         },
+        /* eslint-disable no-unused-vars */
+
+
+
+
+        async wantPassword({commit},payload){
+            var password = prompt("Password: ")
+            localStorageWrite("wallet",payload)
+            if(password == localStorageRead("password")){
+                commit("setAuthStatus", true);
+                return true;
+            }else{
+                return false;
+            }
+
+        },
+        async saveUser({commit},payload){
+            var password = prompt("Create Password: ")
+            localStorageWrite("wallet",payload)
+            localStorageWrite("password",password)
+            commit("setAuthStatus", true);
+            return true;
+        }
+
+        /* eslint-enable no-unused-vars */
     }
 }

@@ -11,20 +11,9 @@ let isInitialized = false;
 
 export const init = async ()=> {
     let provider = window.ethereum;
-
+	
 	if (typeof provider !== 'undefined') {
-		provider
-			.request({ method: 'eth_requestAccounts' })
-			.then((accounts) => {
-				store.commit("setWalletAddress",accounts[0])
-				store.commit("setError",null)
-				console.log(`Selected account is ${store.getters._getWalletAddress}`);
-			})
-			.catch((err) => {
-				console.log(err);
-				return;
-			});
-
+		store.dispatch("connect")
 		window.ethereum.on('accountsChanged', function (accounts) {
 			if(accounts[0] !== undefined) {
 				store.commit("setError",null)
@@ -136,3 +125,29 @@ export const mine = async(id)=> {
 
 }
 
+export const randomDwarf = ()=> {
+    var mining = Math.floor(Math.random() * 10);
+    var luck = Math.floor(Math.random() * 10);
+    var stamina = Math.floor(Math.random() * 50);
+    var mineCooldown = Math.floor(Math.random() * 30);
+    return { mining, luck, stamina, mineCooldown };
+}
+
+export const mint = async()=>{
+	
+	if (!isInitialized) {
+		await init();
+	}
+
+	var dwarf = randomDwarf();
+	var res = await contract.methods
+		.mint(dwarf.mining, dwarf.luck, dwarf.stamina, dwarf.mineCooldown)
+		.send({
+			from: store.getters._getWalletAddress
+		})
+		.catch(function(error) {
+			console.log(error);
+		});
+
+		return res
+	}
